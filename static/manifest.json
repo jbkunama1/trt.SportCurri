@@ -1,0 +1,10 @@
+{
+  "name": "🏅 Sport-Manager",
+  "short_name": "SportMgr",
+  "description": "Schulcurriculum Sport – Realschule BW, BP 2016",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f3460",
+  "theme_color": "#0f3460",
+  "icons": []
+}
