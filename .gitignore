@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+data/
+*.db
+*.db-wal
+*.db-shm
+.env
+.DS_Store
+# PDFs werden per scripts/generate_docs.py erzeugt:
+static/docs/*.pdf
