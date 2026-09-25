@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="hero small">
+  <div class="hero-emoji">📥📄🎨</div>
+  <h1>Dokumente & Downloads</h1>
+  <p class="lead">Alle erstellten Materialien zum Herunterladen</p>
+</div>
+
+<div class="grid">
+  {% for d in docs %}
+  <div class="card doc-card">
+    <div class="doc-icon">{{ d.icon }}</div>
+    <h2>{{ d.title }}</h2>
+    <p class="muted">{{ d.desc }}</p>
+    <p class="muted"><small>{{ d.file }} • {{ d.size_kb }} KB</small></p>
+    <a class="btn btn-primary" href="{{ url_for('serve_doc', filename=d.file) }}">⬇️ Herunterladen</a>
+  </div>
+  {% else %}
+  <div class="card"><p class="muted">Noch keine Dokumente vorhanden. Lege sie in <code>static/docs/</code> ab – sie erscheinen hier automatisch! ✨</p></div>
+  {% endfor %}
+</div>
+
+<div class="card">
+  <h2>💡 Hinweis für Kolleg:innen</h2>
+  <p>Neue Dokumente einfach in den Ordner <code>static/docs/</code> auf dem Server kopieren –
+  sie erscheinen hier automatisch mit passendem Icon. Perfekt für Fortbildungsmaterialien, Bewertungsbögen & Co. 📂</p>
+</div>
+{% endblock %}

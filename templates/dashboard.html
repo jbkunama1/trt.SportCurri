@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="hero small">
+  <div class="hero-emoji">📊🏃‍♂️🏅</div>
+  <h1>Übersicht</h1>
+  <p class="lead">
+    {% if year %}Aktives Schuljahr: <strong>{{ year.label }}</strong>{% else %}
+    ⚠️ Noch kein Schuljahr angelegt — bitte im Admin-Bereich anlegen!{% endif %}
+  </p>
+</div>
+
+<div class="grid stages">
+  {% for s in stages %}
+  {% set p = progress.get(s.key, {"pct": 0, "counts": {}, "total": 0}) %}
+  <a class="card stage-card" href="{{ url_for('klasse', stage=s.key) }}">
+    <div class="stage-emoji">{{ s.emoji }}</div>
+    <h2>{{ s.label }}</h2>
+    <p class="muted">{{ s.hours }} Std. — {{ s.kc }} KC + {{ s.sc }} SC</p>
+    <div class="progress"><span style="width: {{ p.pct }}%"></span></div>
+    <p class="pct">{{ p.pct }} % erledigt</p>
+    <div class="chips">
+      <span class="chip">✅ {{ p.counts.get('erledigt', 0) }}</span>
+      <span class="chip">🔶 {{ p.counts.get('teilweise', 0) }}</span>
+      <span class="chip">⬜ {{ p.counts.get('offen', 0) }}</span>
+      <span class="chip">➖ {{ p.counts.get('entfaellt', 0) }}</span>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+
+<div class="card">
+  <h2>📥 Schnellzugriff: Dokumente</h2>
+  <div class="btn-row" style="justify-content: flex-start">
+    {% for d in docs %}
+    <a class="btn" href="{{ url_for('serve_doc', filename=d.file) }}">{{ d.icon }} {{ d.title }}</a>
+    {% endfor %}
+    <a class="btn" href="{{ url_for('downloads') }}">📂 Alle anzeigen</a>
+  </div>
+</div>
+
+<div class="card">
+  <h2>📚 Schuljahre</h2>
+  <ul class="list">
+    {% for y in years %}
+    <li>{{ '🟢' if y.active else '⚪' }} {{ y.label }}</li>
+    {% else %}
+    <li class="muted">Noch keine Schuljahre angelegt.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

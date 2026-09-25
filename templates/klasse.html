@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="hero small">
+  <div class="hero-emoji">{{ stage_meta.emoji }}</div>
+  <h1>{{ stage_meta.label }}</h1>
+  <p class="lead">
+    {% if year %}Schuljahr {{ year.label }} • {{ stage_meta.hours }} Std. ({{ stage_meta.kc }} Kerncurriculum + {{ stage_meta.sc }} Schulcurriculum)
+    {% else %}Kein aktives Schuljahr!{% endif %}
+  </p>
+  <div class="btn-row">
+    <a class="btn" href="{{ url_for('export_csv', stage=stage) }}">⬇️ CSV</a>
+    <a class="btn" href="{{ url_for('export_json', stage=stage) }}">⬇️ JSON</a>
+    <button class="btn" onclick="window.print()">🖨️ Drucken/PDF</button>
+  </div>
+</div>
+
+{% if year %}
+<h2 class="section-title">📋 Jahresplanung <span class="muted">(tippen zum Markieren)</span></h2>
+<div class="checklist">
+  {% for it in items %}
+  <div class="card item" data-id="{{ it.id }}" data-status="{{ it.status }}">
+    <div class="item-head">
+      <span class="badge">{{ it.item_code }}</span>
+      <span class="hours">{{ it.hours }} Std.</span>
+    </div>
+    <h3>{{ it.item_title }}</h3>
+    <p class="desc">{{ it.item_desc }}</p>
+    <div class="status-row">
+      {% for st, ic in status_icon.items() %}
+      <button class="status-btn {{ 'active' if it.status == st }}" data-status="{{ st }}">{{ ic }}</button>
+      {% endfor %}
+    </div>
+    <textarea class="note" placeholder="📝 Notiz (z. B. 'war super', 'nächstes Jahr anders')…">{{ it.note }}</textarea>
+    <div class="meta muted">{{ '🕒 ' ~ it.updated_at if it.updated_at }} {{ '• ' ~ it.updated_by if it.updated_by }}</div>
+  </div>
+  {% endfor %}
+</div>
+
+<h2 class="section-title">📊 Bewertungsbogen</h2>
+<div class="grid">
+  {% for e in evals %}
+  <div class="card eval" data-id="{{ e.id }}">
+    <div class="eval-head">
+      <h3>{{ e.area }}</h3>
+      <button class="done-btn {{ 'active' if e.done }}">{{ '✅' if e.done else '⬜' }}</button>
+    </div>
+    <p class="desc">{{ e.instrument }}</p>
+    <textarea class="result" placeholder="Ergebnisse / Anmerkungen…">{{ e.result }}</textarea>
+  </div>
+  {% endfor %}
+</div>
+
+<h2 class="section-title">📝 Jahresreflexion <span class="muted">(Übergabe ans Folgejahr)</span></h2>
+<div class="card">
+  {% for qkey, qtext in rq %}
+  <label class="ref-label">{{ qtext }}
+    <textarea class="ref" data-qkey="{{ qkey }}" placeholder="Antwort…">{{ refs.get(qkey, '') }}</textarea>
+  </label>
+  {% endfor %}
+  <div id="ref-saved" class="muted"></div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const YEAR_ID = {{ year.id if year else 'null' }};
+  const STAGE = "{{ stage }}";
+</script>
+<script src="{{ url_for('static', filename='klasse.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="hero small">
+  <div class="hero-emoji">⚙️</div>
+  <h1>Einstellungen</h1>
+  <p class="lead">Hallo {{ session.user.name }}! 👋</p>
+</div>
+
+<div class="card login-card">
+  <h2>🔑 Passwort ändern</h2>
+  {% if msg %}<div class="flash">{{ msg }}</div>{% endif %}
+  <form method="post">
+    <label>Altes Passwort <input type="password" name="old_pw" required></label>
+    <label>Neues Passwort <input type="password" name="new_pw" required minlength="6"></label>
+    <button class="btn btn-primary">Ändern ✅</button>
+  </form>
+</div>
+
+<div class="card">
+  <h2>🎨 Design wählen</h2>
+  <p class="muted">Dein Theme wird in deinem Profil gespeichert.</p>
+  <div class="theme-grid">
+    {% for t, ic, name in [('sporty','🌊','Sporty Blau'), ('sunset','🌅','Sunset'), ('forest','🌲','Wald'), ('neon','💜','Neon'), ('dark','🌙','Dark Mode')] %}
+    <button class="theme-card {{ 'active' if session.user.theme == t }}" onclick="setTheme('{{ t }}')">{{ ic }}<br>{{ name }}</button>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

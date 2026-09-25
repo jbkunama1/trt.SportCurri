@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="hero small">
+  <div class="hero-emoji">🛡️</div>
+  <h1>Admin-Bereich</h1>
+  <p class="lead">Benutzer, Schuljahre & Backup</p>
+</div>
+
+<div class="grid admin-grid">
+  <div class="card">
+    <h2>🗓️ Schuljahr anlegen</h2>
+    <form method="post">
+      <input type="hidden" name="action" value="add_year">
+      <label>Bezeichnung <input name="label" placeholder="z. B. 2026/27" required></label>
+      <button class="btn btn-primary">Anlegen</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>📄 Schuljahr kopieren</h2>
+    <form method="post">
+      <input type="hidden" name="action" value="copy_year">
+      <label>Von
+        <select name="src_id">
+          {% for y in years %}<option value="{{ y.id }}">{{ y.label }}</option>{% endfor %}
+        </select>
+      </label>
+      <label>Neue Bezeichnung <input name="label" placeholder="z. B. 2027/28" required></label>
+      <button class="btn">Kopieren (Status wird übernommen)</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>📚 Schuljahre verwalten</h2>
+    {% for y in years %}
+    <div class="row">
+      <span>{{ '🟢' if y.active else '⚪' }} {{ y.label }} <span class="muted">({{ y.items }} Einträge)</span></span>
+      {% if not y.active %}
+      <form method="post" class="inline">
+        <input type="hidden" name="action" value="activate_year">
+        <input type="hidden" name="year_id" value="{{ y.id }}">
+        <button class="btn small">Aktivieren</button>
+      </form>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="card">
+    <h2>👤 Benutzer anlegen</h2>
+    <form method="post">
+      <input type="hidden" name="action" value="add_user">
+      <label>Anmeldename <input name="username" required></label>
+      <label>Anzeigename <input name="display_name" required></label>
+      <label>Passwort <input name="password" type="password" required></label>
+      <label>Rolle
+        <select name="role">
+          <option value="teacher">Lehrkraft</option>
+          <option value="admin">Admin</option>
+        </select>
+      </label>
+      <button class="btn btn-primary">Anlegen</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>👥 Benutzer verwalten</h2>
+    {% for u in users %}
+    <div class="row">
+      <span>{{ '🟢' if u.active else '🔴' }} {{ u.display_name }} <span class="muted">(@{{ u.username }}, {{ u.role }})</span></span>
+      <div class="btn-row">
+        {% if u.username != 'admin' %}
+        <form method="post" class="inline">
+          <input type="hidden" name="action" value="toggle_user">
+          <input type="hidden" name="user_id" value="{{ u.id }}">
+          <button class="btn small">{{ 'Deaktivieren' if u.active else 'Aktivieren' }}</button>
+        </form>
+        {% endif %}
+        <form method="post" class="inline" onsubmit="return confirm('Passwort wirklich zurücksetzen?')">
+          <input type="hidden" name="action" value="reset_pw">
+          <input type="hidden" name="user_id" value="{{ u.id }}">
+          <input name="new_password" placeholder="Neues PW" class="mini-input" required>
+          <button class="btn small">🔑 Reset</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="card">
+    <h2>💾 Backup & Daten</h2>
+    <p class="muted">Die komplette SQLite-Datenbank herunterladen (z. B. vor Updates).</p>
+    <a class="btn btn-primary" href="{{ url_for('backup') }}">⬇️ DB-Backup laden</a>
+  </div>
+</div>
+
+<div class="card">
+  <h2>📜 Aktivitätsprotokoll (letzte 40)</h2>
+  <ul class="list small">
+    {% for a in audit %}
+    <li><span class="muted">{{ a.created_at }}</span> — {{ a.username }}: {{ a.action }} {{ a.detail }}</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}
